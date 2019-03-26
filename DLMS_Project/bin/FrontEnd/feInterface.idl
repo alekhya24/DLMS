@@ -1,0 +1,15 @@
+module FEApp{
+
+interface feInterface
+{
+	string addItem(in string managerID,in string itemID,in string itemName,in long quantity);
+	string removeItem (in string managerID,in string itemID,in long quantity);
+	string listItemAvailability (in string managerID);
+	
+	//Operations performed by user
+	string borrowItem (in string userID,in string itemID,in boolean isWaitlisted);
+	string findItem (in string userID,in string itemName);
+	string returnItem (in string userID,in string itemID);
+	string exchangeItem(in string userID,in string oldItemID,in string newItemID);
+};
+};
