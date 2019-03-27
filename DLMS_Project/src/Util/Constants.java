@@ -40,3 +40,18 @@ public class Constants {
 	static Map<String, String> REQUEST_HASH_TABLE = new HashMap<String, String>();
 	public static HashMap<Integer, String> liveHostsByName = new HashMap<Integer, String>();
 }
+public enum Replica{
+	REPLICA;
+	public final int replica1 = 4001;
+
+}
+
+public enum Replication {
+	REPLICATION;
+	public final int Replica1 = 1111;
+}
+public enum SequencerPort {
+	SEQUENCER_PORT;
+	public final int sequencerPort = 8002;
+}
+
