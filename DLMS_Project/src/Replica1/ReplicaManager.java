@@ -68,13 +68,13 @@ public class ReplicaManager {
 
     private void executeRequest () throws IOException {
         Request requestToExecute = searchRequestWithSequenceNumber();
-        InetAddress address = InetAddress.getByName("localhost");
+        InetAddress address = InetAddress.getByName("230.1.1.5");
         String ms = requestToExecute.serverImplementation + ":" + requestToExecute.request;
         byte[] data = ms.getBytes();
         //replica port
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, 1111);
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, Port.MULTICAST);
 
-        //execmsgtoreplica
+        //msgtoreplica
         DatagramSocket socket = new DatagramSocket(2000);
 
         socket.send(sendPacket);
