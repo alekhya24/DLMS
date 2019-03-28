@@ -1,6 +1,8 @@
 package Replica1;
 
 import Util.Constants;
+import Util.FailureHandling;
+import Util.Global;
 import Util.LogManager;
 import com.Models.LibraryItem;
 
@@ -26,6 +28,7 @@ public class DCMSServerImplementation{
     ServerUDPManager serverUDPManager;
     public String IPAddress;
     String location;
+    Boolean isFailureToBeHandled = false;
 
 
     public  DCMSServerImplementation(Constants.ServerLocation location){
@@ -56,6 +59,11 @@ public class DCMSServerImplementation{
         }else{
             result = "failure";
             message = "Only manager can perform given operation";
+        }
+
+        if (Global.FailureMode == FailureHandling.SoftwareFailure.ordinal() && this.isFailureToBeHandled){
+             result = "failure";
+             message = "Adding failed";
         }
 
         logManager.logger.log(Level.INFO, Calendar.getInstance().getTime().toString()+"\t"+"Add Item"+"\t"+managerID+"\t"+itemID+"\t"+itemName+"\t"+result+"\t"+message);

@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 
 import Sequencer.Port;
+import Util.FailureHandling;
 
 import java.net.MulticastSocket;
 
@@ -16,11 +17,13 @@ public class ReplicaManager {
     public String replicaNumber;
     public Integer sequenceNumber;
     public ArrayList<Request> arrRequestToPerform;
+    public Boolean isFailureToBeHanlded = false;
     public ReplicaManager(){
         this.replicaNumber = "1";
         this.sequenceNumber = 0;
         this.arrRequestToPerform = new ArrayList<>();
     }
+
 
 
     public void startReplicaManager(int multicastPort) throws Exception{
@@ -32,10 +35,22 @@ public class ReplicaManager {
 				byte[] buffer = new byte[1024];
 				DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 				socket.receive(packet);
+
 				String receiveRequest = new String(packet.getData(), 0, packet.getLength());
-                Request recievedRequest = parseRecievedRequest(receiveRequest);
-                this.arrRequestToPerform.add(recievedRequest);
-                executeRequest();
+				String[] arrRequest = receiveRequest.split(":");
+				if (Integer.valueOf(arrRequest[0]) == FailureHandling.SoftwareFailure.ordinal()){
+                    String failedServerNumber = arrRequest[1];
+                    if (failedServerNumber.equalsIgnoreCase(this.replicaNumber)){
+                        handleFailedReplica();
+                    }
+                } else if (Integer.valueOf(arrRequest[0])==FailureHandling.SoftwareCrash.ordinal()){
+
+                }else{
+                    Request recievedRequest = parseRecievedRequest(receiveRequest);
+                    this.arrRequestToPerform.add(recievedRequest);
+                    executeRequest();
+                }
+
 			}
 
 		} catch (Exception e) {
@@ -46,7 +61,12 @@ public class ReplicaManager {
 		}
         
     }
-    
+
+    public void handleFailedReplica(){
+        this.isFailureToBeHanlded = true;
+    }
+
+
     public Request parseRecievedRequest(String receivedRequest){
         String[] message = receivedRequest.split(":");
         String sequencerID = message[0];
@@ -69,7 +89,7 @@ public class ReplicaManager {
     private void executeRequest () throws IOException {
         Request requestToExecute = searchRequestWithSequenceNumber();
         InetAddress address = InetAddress.getByName("localhost");
-        String ms = requestToExecute.serverImplementation + ":" + requestToExecute.request;
+        String ms = requestToExecute.serverImplementation + ":" + requestToExecute.request + ":"+ this.isFailureToBeHanlded.toString();
         byte[] data = ms.getBytes();
         //replica port
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, 1111);
@@ -86,7 +106,7 @@ public class ReplicaManager {
             socket.receive(recvPacket);
             String receiveMessage = new String(recvPacket.getData(), 0, recvPacket.getLength());
             packageMsgAndSendToFE(socket, requestToExecute.FEAddress, receiveMessage);
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.out.println(e);
         }
     }

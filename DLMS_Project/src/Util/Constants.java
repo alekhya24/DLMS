@@ -38,5 +38,10 @@ public class Constants {
 	//					  ....
 	static Map<String, String> REQUEST_HASH_TABLE = new HashMap<String, String>();
 	public static HashMap<Integer, String> liveHostsByName = new HashMap<Integer, String>();
+	public enum ServerLocation {
+		MCG,
+		CON,
+		MON
+	}
 }
 

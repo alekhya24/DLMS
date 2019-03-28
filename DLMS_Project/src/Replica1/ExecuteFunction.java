@@ -9,11 +9,13 @@ public class ExecuteFunction implements Runnable {
     DatagramPacket packet;
     DatagramSocket socket;
     DCMSServerImplementation serverImplementation;
+    boolean isFailureToBeHandled;
 
-    public ExecuteFunction(DatagramSocket socket,DatagramPacket packet,DCMSServerImplementation serverImplementation){
+    public ExecuteFunction(DatagramSocket socket,DatagramPacket packet,DCMSServerImplementation serverImplementation,boolean isFailureToBeHandled){
         this.socket = socket;
         this.packet = packet;
         this.serverImplementation = serverImplementation;
+        this.isFailureToBeHandled = isFailureToBeHandled;
     }
 
     @Override

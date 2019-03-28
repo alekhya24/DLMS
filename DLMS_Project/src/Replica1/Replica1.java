@@ -32,8 +32,10 @@ public class Replica1 {
             socket.receive(packet);
             System.out.println("Replica one message"  + new String(packet.getData(), 0, packet.getLength()));
             String recievedData =   new String(packet.getData(), 0, packet.getLength());
-            String serverImplementation = recievedData.split(":")[0];
-            Thread thread = new Thread((new ExecuteFunction(socket,packet,getServerImplementation(serverImplementation))));
+            String[] arrData = recievedData.split(":");
+            String serverImplementation = arrData[0];
+            Boolean isFailureToBeHandled = Boolean.valueOf(arrData[2]);
+            Thread thread = new Thread((new ExecuteFunction(socket,packet,getServerImplementation(serverImplementation),isFailureToBeHandled)));
         }
 
     }
@@ -56,7 +58,6 @@ public class Replica1 {
         serverRepository.put("MCG",mcgillServer);
         serverRepository.put("MON",concordiaServer);
         serverRepository.put("CON",montrealServer);
-
 
         Replica1 replica1 = new Replica1(mcgillServer,concordiaServer,montrealServer);
         Runnable replicaTask = () -> {
