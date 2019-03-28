@@ -1,4 +1,4 @@
-package com.Server;
+package Replica1;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

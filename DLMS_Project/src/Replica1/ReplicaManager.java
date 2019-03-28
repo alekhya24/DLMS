@@ -1,4 +1,4 @@
-package com.Server;
+package Replica1;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -15,7 +15,7 @@ public class ReplicaManager {
 
     public String replicaNumber;
     public Integer sequenceNumber;
-    public ArrayList<com.Server.Request> arrRequestToPerform;
+    public ArrayList<Request> arrRequestToPerform;
     public ReplicaManager(){
         this.replicaNumber = "1";
         this.sequenceNumber = 0;
@@ -26,12 +26,12 @@ public class ReplicaManager {
     public void startReplicaManager(int multicastPort) throws Exception{
 		MulticastSocket socket = null;
 		try {
-			socket = new DatagramSocket(multicastPort);
-			aSocket.joinGroup(InetAddress.getByName("230.1.1.5"));
+			socket = new MulticastSocket(multicastPort);
+			socket.joinGroup(InetAddress.getByName("230.1.1.5"));
 			while (true) {
 				byte[] buffer = new byte[1024];
 				DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-				aSocket.receive(packet);
+				socket.receive(packet);
 				String receiveRequest = new String(packet.getData(), 0, packet.getLength());
                 Request recievedRequest = parseRecievedRequest(receiveRequest);
                 this.arrRequestToPerform.add(recievedRequest);
@@ -41,8 +41,8 @@ public class ReplicaManager {
 		} catch (Exception e) {
 			System.out.println("Socket: " + e.getMessage());
 		}  finally {
-			if (aSocket != null)
-				aSocket.close();
+			if (socket != null)
+				socket.close();
 		}
         
     }
@@ -68,13 +68,13 @@ public class ReplicaManager {
 
     private void executeRequest () throws IOException {
         Request requestToExecute = searchRequestWithSequenceNumber();
-        InetAddress address = InetAddress.getByName("230.1.1.5");
+        InetAddress address = InetAddress.getByName("localhost");
         String ms = requestToExecute.serverImplementation + ":" + requestToExecute.request;
         byte[] data = ms.getBytes();
         //replica port
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, Port.MULTICAST);
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, 1111);
 
-        //msgtoreplica
+        //execmsgtoreplica
         DatagramSocket socket = new DatagramSocket(2000);
 
         socket.send(sendPacket);

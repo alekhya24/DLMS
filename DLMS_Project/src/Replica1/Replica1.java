@@ -1,3 +1,6 @@
+package Replica1;
+
+import Util.Constants;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,10 +11,10 @@ public class Replica1 {
     public DCMSServerImplementation mcgillServer;
     public DCMSServerImplementation concordiaServer;
     public DCMSServerImplementation montrealServer;
-    static HashMap<String,DCMSServerImplementation> serverRepository;
+    static HashMap<String, DCMSServerImplementation> serverRepository;
 
 
-    public Replica1(DCMSServerImplementation mcgillServer,DCMSServerImplementation concordiaServer,DCMSServerImplementation montrealServer){
+    public Replica1(DCMSServerImplementation mcgillServer, DCMSServerImplementation concordiaServer, DCMSServerImplementation montrealServer){
         this.mcgillServer = mcgillServer;
         this.concordiaServer = concordiaServer;
         this.montrealServer = montrealServer;
@@ -22,6 +25,7 @@ public class Replica1 {
         DatagramPacket packet = null;
         byte[] data = null;
         System.out.println("Replica one started");
+
         while (true){
             data = new byte[1024];
             packet = new DatagramPacket(data,data.length);
@@ -45,9 +49,9 @@ public class Replica1 {
 
     public static void main(String args[]) throws IOException{
 
-        DCMSServerImplementation mcgillServer = new DCMSServerImplementation(com.Server.Constants.ServerLocation.MCG);
-        DCMSServerImplementation concordiaServer = new DCMSServerImplementation(com.Server.Constants.ServerLocation.CON);
-        DCMSServerImplementation montrealServer = new DCMSServerImplementation(com.Server.Constants.ServerLocation.MON);
+        DCMSServerImplementation mcgillServer = new DCMSServerImplementation(Constants.ServerLocation.MCG);
+        DCMSServerImplementation concordiaServer = new DCMSServerImplementation(Constants.ServerLocation.CON);
+        DCMSServerImplementation montrealServer = new DCMSServerImplementation(Constants.ServerLocation.MON);
         serverRepository = new HashMap<>();
         serverRepository.put("MCG",mcgillServer);
         serverRepository.put("MON",concordiaServer);
@@ -64,7 +68,6 @@ public class Replica1 {
         };
         Thread replicaThread = new Thread(replicaTask);
         replicaThread.start();
-
 
     }
 

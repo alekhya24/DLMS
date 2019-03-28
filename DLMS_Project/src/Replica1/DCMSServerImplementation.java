@@ -1,6 +1,7 @@
-package com.Server;
+package Replica1;
 
-import com.Configuration.LogManager;
+import Util.Constants;
+import Util.LogManager;
 import com.Models.LibraryItem;
 
 import java.io.IOException;
@@ -23,11 +24,11 @@ public class DCMSServerImplementation{
     String serverLocation;
     LogManager logManager;
     ServerUDPManager serverUDPManager;
-    String IPAddress;
+    public String IPAddress;
     String location;
 
 
-    public  DCMSServerImplementation(com.Server.Constants.ServerLocation location){
+    public  DCMSServerImplementation(Constants.ServerLocation location){
         this.logManager = new LogManager(location.toString());
         this.hashMapBorrowListUser = new HashMap<>();
         this.hashMapLibrary = new HashMap<>();
