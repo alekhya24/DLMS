@@ -24,7 +24,6 @@ public class Constants {
 	static String REQUESTID_GENERATOR_IP = "127.0.0.1";
 	static int REQUESTID_GENERATOR_PORT = 3000;
 	
-	
 	public static int LOCAL_LISTENING_PORT = 3500;
 	
 	// Leader Host IP and Port
@@ -39,19 +38,5 @@ public class Constants {
 	//					  ....
 	static Map<String, String> REQUEST_HASH_TABLE = new HashMap<String, String>();
 	public static HashMap<Integer, String> liveHostsByName = new HashMap<Integer, String>();
-}
-public enum Replica{
-	REPLICA;
-	public final int replica1 = 4001;
-
-}
-
-public enum Replication {
-	REPLICATION;
-	public final int Replica1 = 1111;
-}
-public enum SequencerPort {
-	SEQUENCER_PORT;
-	public final int sequencerPort = 8002;
 }
 

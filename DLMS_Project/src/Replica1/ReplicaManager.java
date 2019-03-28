@@ -6,6 +6,11 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import Sequencer.Port;
+
+import java.net.MulticastSocket;
+
+
 public class ReplicaManager {
 
     public String replicaNumber;
@@ -18,24 +23,30 @@ public class ReplicaManager {
     }
 
 
-    public void startReplicaManager(int replicaManagerPort) throws Exception{
-        DatagramSocket socket = new DatagramSocket(replicaManagerPort);
-        DatagramPacket packet = null;
-        byte[] data = null;
-        while(true)
-        {
-            data = new byte[1024];
-            packet = new DatagramPacket(data, data.length);
-            socket.receive(packet);
-
-            String receiveRequest = new String(packet.getData(), 0, packet.getLength());
-
+    public void startReplicaManager(int multicastPort) throws Exception{
+		MulticastSocket socket = null;
+		try {
+			socket = new DatagramSocket(multicastPort);
+			aSocket.joinGroup(InetAddress.getByName("230.1.1.5"));
+			while (true) {
+				byte[] buffer = new byte[1024];
+				DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+				aSocket.receive(packet);
+				String receiveRequest = new String(packet.getData(), 0, packet.getLength());
                 Request recievedRequest = parseRecievedRequest(receiveRequest);
                 this.arrRequestToPerform.add(recievedRequest);
                 executeRequest();
+			}
 
-        }
+		} catch (Exception e) {
+			System.out.println("Socket: " + e.getMessage());
+		}  finally {
+			if (aSocket != null)
+				aSocket.close();
+		}
+        
     }
+    
     public Request parseRecievedRequest(String receivedRequest){
         String[] message = receivedRequest.split(":");
         String sequencerID = message[0];
@@ -96,7 +107,7 @@ public class ReplicaManager {
 
         Runnable replicaManagerThread = () -> {
             try {
-                replicaManager.startReplicaManager(4001);
+                replicaManager.startReplicaManager(Port.MULTICAST);
             } catch (Exception e) {
                 e.printStackTrace();
             }
