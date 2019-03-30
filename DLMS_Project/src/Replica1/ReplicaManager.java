@@ -156,7 +156,7 @@ public class ReplicaManager {
         String ms = requestToExecute.serverImplementation + ":" + requestToExecute.request + ":"+ this.isFailureToBeHanlded.toString();
         byte[] data = ms.getBytes();
         //replica port
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, Port.MULTICAST);
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, 1211);
 
         //execmsgtoreplica
         DatagramSocket socket = new DatagramSocket();

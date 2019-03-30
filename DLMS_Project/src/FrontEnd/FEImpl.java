@@ -43,8 +43,6 @@ public class FEImpl extends feInterfacePOA {
 		super();
 		location=libraryLocation.toString();
 		logManager=new LogManager(libraryLocation.getserverName().toString().toUpperCase());
-		//serverUDP = new ServerUDP(libraryLocation, logManager.logger, this);
-		//serverUDP.start();
 	}
 	
 	private ORB orb;
@@ -254,12 +252,12 @@ public class FEImpl extends feInterfacePOA {
 ArrayList<ServerResponse> result = new ArrayList<ServerResponse> () ;
 DatagramSocket ds = new DatagramSocket(Port.FE);
 		try {
-			///while ( true ) {
+			//while ( true ) {
 				byte[] receiveBuffer = new byte[512] ;
-				DatagramPacket receivePacket = new DatagramPacket ( receiveBuffer, receiveBuffer.length ) ;
+				DatagramPacket receivePacket = new DatagramPacket ( receiveBuffer, receiveBuffer.length );
 				ds.receive(receivePacket);
 				String bs = new String ( receivePacket.getData() ) ;
-				String[] res=bs.split(":");
+				String[] res=bs.split(Constants.DELIMITER);
 				ServerResponse op = new ServerResponse(res[0],res[1]);
 				result.add(op) ;
 			//}

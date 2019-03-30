@@ -4,6 +4,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import Util.Constants;
+
 public class ExecuteFunction implements Runnable {
 
     DatagramPacket packet;
@@ -23,15 +25,14 @@ public class ExecuteFunction implements Runnable {
         InetAddress address = null;
         String data = new String(packet.getData(), 0 , packet.getLength());
         String message = null;
-        String[] ms = data.split(":");
+        String[] ms = data.split(Constants.DELIMITER);
         message = ms[1];
-        System.out.println(message);
         int port = 4400;
         byte[] data2 = null;
         DatagramPacket packet2 = null;
 
         try {
-            String[] function = message.split("_");
+            String[] function = message.split(Constants.REQUEST_DELIMITER);
             String result = "";
 
             switch (function[0]){

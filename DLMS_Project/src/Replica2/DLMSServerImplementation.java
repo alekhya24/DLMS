@@ -75,7 +75,7 @@ public class DLMSServerImplementation {
 			item.ItemName=itemName;
 			item.InStock=quantity;
 			dataMap.put(key,item);
-			result="Item is added " + item.ItemName + " with key: " + key;
+			result="Item is added " + item.ItemName + " with key " + key;
 			}
 			logManager.logger.info("AddItem Server Response: "+result);
 			logManager.logger.info("AddItem Request Successfully completed");
@@ -416,7 +416,7 @@ public class DLMSServerImplementation {
 			}}
 			else
 			{
-				result="No Item exists with item Id: "+itemID;
+				result="No Item exists with item Id  "+itemID;
 			}
 			}
 			else

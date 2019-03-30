@@ -33,6 +33,7 @@ public class Constants {
 	public static String DELIMITER=":";
 	public static String REQUEST_DELIMITER="_";
 	
+	public static String FE_ADDRESS="localhost";
 	// Front end hash table for storing the request information in case of message lost.
 	// First String is requestID, second String is request message for sending to leader host.like below
 	// key:0001    value: 0001

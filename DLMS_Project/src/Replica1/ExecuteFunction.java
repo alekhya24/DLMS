@@ -4,6 +4,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import Util.Constants;
+
 public class ExecuteFunction implements Runnable {
 
     DatagramPacket packet;
@@ -31,7 +33,7 @@ public class ExecuteFunction implements Runnable {
         DatagramPacket packet2 = null;
 
         try {
-            String[] function = message.split(" ");
+            String[] function = message.split(Constants.REQUEST_DELIMITER);
             String result = "";
 
             switch (function[0]){

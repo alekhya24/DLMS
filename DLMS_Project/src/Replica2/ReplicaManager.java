@@ -19,7 +19,7 @@ public class ReplicaManager {
     public ArrayList<Request> arrRequestToPerform;
     public Boolean isFailureToBeHanlded = false;
     public ReplicaManager(){
-        this.replicaNumber = "1";
+        this.replicaNumber = "2";
         this.sequenceNumber = 0;
         this.arrRequestToPerform = new ArrayList<>();
     }
