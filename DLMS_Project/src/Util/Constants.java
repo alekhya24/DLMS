@@ -30,6 +30,9 @@ public class Constants {
 	static String PRIMARY_SERVER_IP = "127.0.0.1";
 	public static int PRIMARY_SERVER_PORT = 6000;
 	
+	public static String DELIMITER=":";
+	public static String REQUEST_DELIMITER="_";
+	
 	// Front end hash table for storing the request information in case of message lost.
 	// First String is requestID, second String is request message for sending to leader host.like below
 	// key:0001    value: 0001

@@ -87,7 +87,7 @@ public class FEServer {
 				NameComponent path[] = ncRef.to_name(location.toString().toUpperCase() );
 				ncRef.rebind(path, href);
 
-				System.out.println(location.toString().toUpperCase()+" Server ready and waiting ...");
+				//System.out.println(location.toString().toUpperCase()+" Server ready and waiting ...");
 		}
 			
 

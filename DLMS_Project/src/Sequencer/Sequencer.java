@@ -24,7 +24,7 @@ public class Sequencer {
 				DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 				socket.receive(request);
 				String data = new String(request.getData(), 0, request.getLength());
-				data += (":" + Integer.toString(sequenceNum));
+				data = (Integer.toString(sequenceNum)+ ":" + data);
 				sequenceNum++;
 				System.out.println(data);
 				multicast(data.getBytes());

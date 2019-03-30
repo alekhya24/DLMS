@@ -18,6 +18,7 @@ import org.omg.CORBA.ORB;
 import FEApp.feInterfacePOA;
 import Model.*;
 import Sequencer.Port;
+import Util.Constants;
 import Util.LogManager;
 import Util.Servers;
 
@@ -52,8 +53,25 @@ public class FEImpl extends feInterfacePOA {
 		orb = orb_val; 
 	}
 	
+	private String getServer(String id)
+	{
+		if(id.contains("MON"))
+		{
+			return Servers.MON.name();
+		}
+		else if(id.contains("MCG"))
+		{
+			return Servers.MCG.name();
+		}
+		else
+		{
+			return Servers.CON.name();
+		}
+	}
+	
 	public String addItem(String managerID, String itemId, String itemName, int quantity) {
-		String request = "AddItem," + managerID + "," + itemId+","+itemName+","+quantity;
+		String serverName=getServer(managerID);
+		String request =Port.FE+ Constants.DELIMITER+ serverName+Constants.DELIMITER+"addItem"+Constants.REQUEST_DELIMITER + managerID + Constants.REQUEST_DELIMITER + itemId+Constants.REQUEST_DELIMITER+itemName+Constants.REQUEST_DELIMITER+quantity;
 		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Add Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
@@ -76,7 +94,8 @@ public class FEImpl extends feInterfacePOA {
 
 	public String removeItem (String managerID,String itemID,int quantity) 
 	{
-		String request = "RemoveItem," + managerID + "," + itemID+","+quantity;
+		String serverName=getServer(managerID);
+		String request = Port.FE+Constants.DELIMITER+serverName+Constants.DELIMITER+"removeItem" +Constants.REQUEST_DELIMITER+ managerID + Constants.REQUEST_DELIMITER + itemID+Constants.REQUEST_DELIMITER+quantity;
 		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Remove Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
@@ -99,7 +118,8 @@ public class FEImpl extends feInterfacePOA {
 	
 	
 	public String listItemAvailability(String managerID)  {
-		String request = "ListItemAvailability," + managerID ;
+		String serverName=getServer(managerID);
+		String request = Port.FE+Constants.DELIMITER+serverName+Constants.DELIMITER+"listItemAvailability"+Constants.REQUEST_DELIMITER + managerID ;
 		logManager.logger.log(Level.INFO, " Sending request to Sequencer to List Item Availability: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
@@ -123,7 +143,8 @@ public class FEImpl extends feInterfacePOA {
 	
 	public String findItem (String userID,String itemName)
 	{
-		String request = "FindItem," + userID + "," + itemName;
+		String serverName=getServer(userID);
+		String request =Port.FE+Constants.DELIMITER+ serverName+Constants.DELIMITER+"findItem"+Constants.REQUEST_DELIMITER + userID + Constants.REQUEST_DELIMITER+ itemName;
 		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Find Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
@@ -146,7 +167,8 @@ public class FEImpl extends feInterfacePOA {
 
 	public String returnItem (String userID,String itemID) 
 	{
-		String request = "ReturnItem," + userID + "," + itemID;
+		String serverName=getServer(userID);
+		String request =Port.FE+Constants.DELIMITER+ serverName+Constants.DELIMITER+ "returnItem"+Constants.REQUEST_DELIMITER + userID + Constants.REQUEST_DELIMITER + itemID;
 		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Return Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
@@ -168,7 +190,8 @@ public class FEImpl extends feInterfacePOA {
 		}
 
 	public String borrowItem(String userID, String itemID,boolean isWaitlisted)  {
-		String request = "BorrowItem," + userID + "," + itemID+","+isWaitlisted;
+		String serverName=getServer(userID);
+		String request = Port.FE+":"+serverName+Constants.DELIMITER+ "borrowItem"+Constants.REQUEST_DELIMITER + userID + Constants.REQUEST_DELIMITER + itemID+Constants.REQUEST_DELIMITER+isWaitlisted;
 		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Borrow Item: " + request);
 		 sendRequestToSequencer(request);
 		 String finalOp="";
@@ -191,7 +214,8 @@ public class FEImpl extends feInterfacePOA {
 	
 	
 	public String exchangeItem(String userID, String oldItemId,String newItemId)  {
-		String request = "ExchangeItem," + userID + "," + oldItemId+","+newItemId;
+		String serverName=getServer(userID);
+		String request = Port.FE+Constants.DELIMITER+serverName+Constants.DELIMITER+"exchangeItem"+Constants.REQUEST_DELIMITER + userID + Constants.REQUEST_DELIMITER + oldItemId+Constants.REQUEST_DELIMITER+newItemId;
 		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Exchange Item: " + request);
 		 sendRequestToSequencer(request);
 		 String finalOp="";
@@ -228,21 +252,17 @@ public class FEImpl extends feInterfacePOA {
 	
 	public ArrayList<ServerResponse> getResponseFromServer() throws IOException {
 ArrayList<ServerResponse> result = new ArrayList<ServerResponse> () ;
-DatagramSocket ds = new DatagramSocket();
+DatagramSocket ds = new DatagramSocket(Port.FE);
 		try {
-			while ( true ) {
+			///while ( true ) {
 				byte[] receiveBuffer = new byte[512] ;
 				DatagramPacket receivePacket = new DatagramPacket ( receiveBuffer, receiveBuffer.length ) ;
 				ds.receive(receivePacket);
-				ByteArrayInputStream bs = new ByteArrayInputStream ( receivePacket.getData() ) ;
-				ObjectInputStream is = new ObjectInputStream ( bs ) ;
-				try {
-					ServerResponse res = ( ServerResponse ) is.readObject() ;
-					result.add(res) ;
-				} catch ( ClassNotFoundException e ) {
-					System.out.println ( e.getMessage() ) ;
-				}
-			}
+				String bs = new String ( receivePacket.getData() ) ;
+				String[] res=bs.split(":");
+				ServerResponse op = new ServerResponse(res[0],res[1]);
+				result.add(op) ;
+			//}
 		} catch (SocketTimeoutException e ) {
 			System.out.println(e.getMessage());
 		}
