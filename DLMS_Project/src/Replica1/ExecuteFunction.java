@@ -8,10 +8,10 @@ public class ExecuteFunction implements Runnable {
 
     DatagramPacket packet;
     DatagramSocket socket;
-    DCMSServerImplementation serverImplementation;
+    DLMSServerImplementation serverImplementation;
     boolean isFailureToBeHandled;
 
-    public ExecuteFunction(DatagramSocket socket,DatagramPacket packet,DCMSServerImplementation serverImplementation,boolean isFailureToBeHandled){
+    public ExecuteFunction(DatagramSocket socket,DatagramPacket packet,DLMSServerImplementation serverImplementation,boolean isFailureToBeHandled){
         this.socket = socket;
         this.packet = packet;
         this.serverImplementation = serverImplementation;

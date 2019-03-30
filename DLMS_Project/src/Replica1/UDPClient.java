@@ -6,13 +6,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class UDPClient extends Thread {
-    DCMSServerImplementation serverImplementation;
+    DLMSServerImplementation serverImplementation;
     String isBookBorrowd;
     String isBookReturned;
     String itemSearchResult;
     String itemID;
 
-    public UDPClient(DCMSServerImplementation serverImplementation, String itemID) throws IOException {
+    public UDPClient(DLMSServerImplementation serverImplementation, String itemID) throws IOException {
         this.serverImplementation = serverImplementation;
         this.itemID = itemID;
     }

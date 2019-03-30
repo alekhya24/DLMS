@@ -1,15 +1,11 @@
 package Replica1;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.*;
 import java.util.ArrayList;
 
 import Sequencer.Port;
 import Util.FailureHandling;
-
-import java.net.MulticastSocket;
 
 
 public class ReplicaManager {
@@ -18,15 +14,14 @@ public class ReplicaManager {
     public Integer sequenceNumber;
     public ArrayList<Request> arrRequestToPerform;
     public Boolean isFailureToBeHanlded = false;
+    public int crashCount = 0;
     public ReplicaManager(){
         this.replicaNumber = "1";
         this.sequenceNumber = 0;
         this.arrRequestToPerform = new ArrayList<>();
     }
 
-
-
-    public void startReplicaManager(int multicastPort) throws Exception{
+    public void startReplicaManager(int multicastPort){
 		MulticastSocket socket = null;
 		try {
 			socket = new MulticastSocket(multicastPort);
@@ -35,24 +30,28 @@ public class ReplicaManager {
 				byte[] buffer = new byte[1024];
 				DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 				socket.receive(packet);
-
 				String receiveRequest = new String(packet.getData(), 0, packet.getLength());
-				String[] arrRequest = receiveRequest.split(":");
-				if (Integer.valueOf(arrRequest[0]) == FailureHandling.SoftwareFailure.ordinal()){
-                    String failedServerNumber = arrRequest[1];
-                    if (failedServerNumber.equalsIgnoreCase(this.replicaNumber)){
-                        handleFailedReplica();
-                    }
-                } else if (Integer.valueOf(arrRequest[0])==FailureHandling.SoftwareCrash.ordinal()){
-
-                }else{
+//				String[] arrRequest = receiveRequest.split(":");
+//				if (Integer.valueOf(arrRequest[0]) == FailureHandling.SoftwareFailure.ordinal()){
+//                    String failedServerNumber = arrRequest[1];
+//                    if (failedServerNumber.equalsIgnoreCase(this.replicaNumber)){
+//                        handleFailedReplica();
+//                    }
+//                } else if (Integer.valueOf(arrRequest[0])==FailureHandling.SoftwareCrash.ordinal()){
+//				    String crashServer = arrRequest[0];
+//                    if (arrRequest.length > 2) {
+//                        this.handleEchoFailedReplica();
+//                    }else{
+//                        if (crashServer!=this.replicaNumber){
+//                            this.handleCrashCheck(replicaNumber);
+//                        }
+//                    }
+//                } else {
                     Request recievedRequest = parseRecievedRequest(receiveRequest);
                     this.arrRequestToPerform.add(recievedRequest);
                     executeRequest();
-                }
-
+//                }
 			}
-
 		} catch (Exception e) {
 			System.out.println("Socket: " + e.getMessage());
 		}  finally {
@@ -60,6 +59,71 @@ public class ReplicaManager {
 				socket.close();
 		}
         
+    }
+
+    public void handleCrashCheck(String replicaNum){
+        Runnable crashCheck = () -> {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("" + threadName);
+            try {
+                checkEcho("230.1.1.5",replicaNum);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        };
+        crashCheck.run();
+
+    }
+    private void checkEcho(String rmAddress, String replica){
+        try {
+            InetAddress address = InetAddress.getByName(rmAddress);
+            DatagramSocket socket = new DatagramSocket();
+            byte[] data = "Hi".getBytes();
+            DatagramPacket packet = new DatagramPacket(data, 0 ,data.length, address, Integer.parseInt(replica));
+            socket.send(packet);
+
+            byte[] data2 = new byte[1024];
+            DatagramPacket newPacket = new DatagramPacket(data2,data2.length);
+            Runnable timer = () -> {
+                try {
+                    Thread.sleep(5000);
+                    socket.close();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            };
+            timer.run();
+            socket.receive(newPacket);
+        } catch (SocketException e) {
+            manageInformingReplicaManagers(rmAddress,replicaNumber);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleEchoFailedReplica(){
+        if (this.crashCount >2){
+        }else{
+            this.crashCount++;
+        }
+    }
+    public void manageInformingReplicaManagers(String rmAddress,String replicaNum){
+        try {
+            InetAddress address = InetAddress.getByName(rmAddress);
+            DatagramSocket socket = new DatagramSocket();
+            byte[] data =  (replicaNum +":"+ FailureHandling.SoftwareCrash.toString() +":"+ "ECHOFAILED").getBytes();
+            DatagramPacket packet = new DatagramPacket(data, 0 ,data.length, address, Port.MULTICAST);
+            socket.send(packet);
+            socket.close();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleFailedReplica(){
@@ -92,10 +156,10 @@ public class ReplicaManager {
         String ms = requestToExecute.serverImplementation + ":" + requestToExecute.request + ":"+ this.isFailureToBeHanlded.toString();
         byte[] data = ms.getBytes();
         //replica port
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, 1111);
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address, Port.MULTICAST);
 
         //execmsgtoreplica
-        DatagramSocket socket = new DatagramSocket(2000);
+        DatagramSocket socket = new DatagramSocket();
 
         socket.send(sendPacket);
 
@@ -112,16 +176,17 @@ public class ReplicaManager {
     }
 
     private void packageMsgAndSendToFE (DatagramSocket socket, String feHostAddress, String receiveMessage) throws IOException {
-        InetAddress address = InetAddress.getByName(feHostAddress);
+        InetAddress address = InetAddress.getByName("localhost");
         String msg = this.replicaNumber + ":" + receiveMessage;
         byte[] data = msg.getBytes();
         //feport
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address , 6000);
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, address , Port.FE);
         socket.send(sendPacket);
         socket.close();
     }
 
     public static void main(String[] args){
+        System.setProperty("java.net.preferIPv4Stack", "true");
 
         ReplicaManager replicaManager = new ReplicaManager();
 

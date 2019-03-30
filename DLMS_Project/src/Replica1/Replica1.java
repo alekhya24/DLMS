@@ -8,13 +8,13 @@ import java.net.DatagramSocket;
 import java.util.HashMap;
 
 public class Replica1 {
-    public DCMSServerImplementation mcgillServer;
-    public DCMSServerImplementation concordiaServer;
-    public DCMSServerImplementation montrealServer;
-    static HashMap<String, DCMSServerImplementation> serverRepository;
+    public DLMSServerImplementation mcgillServer;
+    public DLMSServerImplementation concordiaServer;
+    public DLMSServerImplementation montrealServer;
+    static HashMap<String, DLMSServerImplementation> serverRepository;
 
 
-    public Replica1(DCMSServerImplementation mcgillServer, DCMSServerImplementation concordiaServer, DCMSServerImplementation montrealServer){
+    public Replica1(DLMSServerImplementation mcgillServer, DLMSServerImplementation concordiaServer, DLMSServerImplementation montrealServer){
         this.mcgillServer = mcgillServer;
         this.concordiaServer = concordiaServer;
         this.montrealServer = montrealServer;
@@ -36,10 +36,11 @@ public class Replica1 {
             String serverImplementation = arrData[0];
             Boolean isFailureToBeHandled = Boolean.valueOf(arrData[2]);
             Thread thread = new Thread((new ExecuteFunction(socket,packet,getServerImplementation(serverImplementation),isFailureToBeHandled)));
+            thread.start();
         }
 
     }
-    public DCMSServerImplementation getServerImplementation(String  serverImplementation){
+    public DLMSServerImplementation getServerImplementation(String  serverImplementation){
         if (serverImplementation.equalsIgnoreCase("MCG")){
             return this.mcgillServer;
         }else if (serverImplementation.equalsIgnoreCase("CON")){
@@ -51,9 +52,9 @@ public class Replica1 {
 
     public static void main(String args[]) throws IOException{
 
-        DCMSServerImplementation mcgillServer = new DCMSServerImplementation(Constants.ServerLocation.MCG);
-        DCMSServerImplementation concordiaServer = new DCMSServerImplementation(Constants.ServerLocation.CON);
-        DCMSServerImplementation montrealServer = new DCMSServerImplementation(Constants.ServerLocation.MON);
+        DLMSServerImplementation mcgillServer = new DLMSServerImplementation(Constants.ServerLocation.MCG);
+        DLMSServerImplementation concordiaServer = new DLMSServerImplementation(Constants.ServerLocation.CON);
+        DLMSServerImplementation montrealServer = new DLMSServerImplementation(Constants.ServerLocation.MON);
         serverRepository = new HashMap<>();
         serverRepository.put("MCG",mcgillServer);
         serverRepository.put("MON",concordiaServer);
@@ -62,7 +63,7 @@ public class Replica1 {
         Replica1 replica1 = new Replica1(mcgillServer,concordiaServer,montrealServer);
         Runnable replicaTask = () -> {
             try {
-                replica1.startReplica(1111);
+                replica1.startReplica(1211);
             } catch (IOException e) {
                 e.printStackTrace();
             }

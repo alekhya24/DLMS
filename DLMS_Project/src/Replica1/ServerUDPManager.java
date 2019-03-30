@@ -13,10 +13,10 @@ public class ServerUDPManager extends Thread {
     DatagramPacket sentPacket;
     int udpPortNo;
     Constants.ServerLocation location;
-    DCMSServerImplementation serverImplementation;
+    DLMSServerImplementation serverImplementation;
     Logger logInstance;
 
-    public ServerUDPManager(DCMSServerImplementation serverImplementation, Constants.ServerLocation location, Logger logger){
+    public ServerUDPManager(DLMSServerImplementation serverImplementation, Constants.ServerLocation location, Logger logger){
             this.location = location;
             this.serverImplementation = serverImplementation;
             logInstance = logger;

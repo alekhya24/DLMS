@@ -1,7 +1,6 @@
 package Replica1;
 
 import Util.Constants;
-import com.Models.LibraryItem;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -13,9 +12,9 @@ public class UDPServer extends Thread{
     private DatagramSocket serverSocket;
     private Constants.ServerLocation serverLocation;
     private DatagramPacket recievedPacket;
-    private DCMSServerImplementation serverImplementation;
+    private DLMSServerImplementation serverImplementation;
 
-    public UDPServer(DatagramPacket packet, DCMSServerImplementation serverImplementation){
+    public UDPServer(DatagramPacket packet, DLMSServerImplementation serverImplementation){
         recievedPacket = packet;
         this.serverImplementation = serverImplementation;
         try{
@@ -130,8 +129,8 @@ public class UDPServer extends Thread{
     boolean returnBook(String itemID,String userID){
         ArrayList<String> arrUserID = serverImplementation.hashMapBorrowListItem.get(itemID);
         if (arrUserID.contains(userID)){
-            serverImplementation.updateItemQuantity(itemID,1, DCMSServerImplementation.OPERATION.ADD);
-            serverImplementation.updateHashMapItem(userID,itemID, DCMSServerImplementation.OPERATION.REMOVE);
+            serverImplementation.updateItemQuantity(itemID,1, DLMSServerImplementation.OPERATION.ADD);
+            serverImplementation.updateHashMapItem(userID,itemID, DLMSServerImplementation.OPERATION.REMOVE);
             serverImplementation.manageWaitListOnAdd(itemID);
             return true;
         }else{
@@ -144,8 +143,8 @@ public class UDPServer extends Thread{
        String result ="";
        String message = "";
        if (item.itemQuantity>0){
-           serverImplementation.updateItemQuantity(itemID,1, DCMSServerImplementation.OPERATION.REMOVE);
-           serverImplementation.updateHashMapItem(userID,itemID, DCMSServerImplementation.OPERATION.ADD);
+           serverImplementation.updateItemQuantity(itemID,1, DLMSServerImplementation.OPERATION.REMOVE);
+           serverImplementation.updateHashMapItem(userID,itemID, DLMSServerImplementation.OPERATION.ADD);
            result = "Success";
            message = "User from"+userID.substring(0,3)+" borrowed book";
            serverImplementation.logManager.logger.log(Level.INFO, Calendar.getInstance().getTime().toString()+"\t"+"Borrow Item"+"\t"+userID+"\t"+itemID+"\t"+item.itemName+"\t"+result+"\t"+message);
