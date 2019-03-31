@@ -17,6 +17,7 @@ import org.omg.PortableServer.POAHelper;
 import FEApp.feInterface;
 import FEApp.feInterfaceHelper;
 import Util.Constants;
+import Util.FailureHandling;
 import Util.Servers;
 
 public class FEServer {
@@ -32,11 +33,11 @@ public class FEServer {
 				int choice = Integer.parseInt(r.readLine()) ;
 				if ( choice == 1 ) {
 					System.out.println ("The Failure Tolerant System is now ready to accept client requests") ;
-					FEImpl.setFailureType("Fault Tolerance");
+					FEImpl.setFailureType(FailureHandling.SoftwareFailure);
 					break ;
 				} else if ( choice == 2 ) {
 					System.out.println ("The Highly Available System is now ready to accept client requests") ;
-					FEImpl.setFailureType("High Availability");
+					FEImpl.setFailureType(FailureHandling.SoftwareCrash);
 					break ;
 				} else {
 					System.out.println( "You have entered a wrong choice" );
@@ -64,32 +65,16 @@ public class FEServer {
 			ORB orb = ORB.init(args, props);
 			POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
 			rootpoa.the_POAManager().activate();
-//			FEImpl fe_Impl = new FEImpl();
-//			fe_Impl.setORB(orb); 
-//
-//			org.omg.CORBA.Object ref = rootpoa.servant_to_reference(fe_Impl);
-//			feInterface href = feInterfaceHelper.narrow(ref);
-//			org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
-//			NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
-//			String name = Constants.SERVER_NAME;
-//			NameComponent path[] = ncRef.to_name(name);
-//			ncRef.rebind(path, href);
-			serverData = new HashMap<>();
-			for (Servers location : Servers.values()) {
-				FEImpl serverImpl = new FEImpl(location);
-				serverData.put(location.toString(),serverImpl);
+				FEImpl serverImpl = new FEImpl();
 				serverImpl.setORB(orb); 
 				org.omg.CORBA.Object ref = rootpoa.servant_to_reference(serverImpl);
 				FEApp.feInterface href = feInterfaceHelper.narrow(ref);
 
 				org.omg.CORBA.Object objRef =  orb.resolve_initial_references("NameService");
 				NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
-				NameComponent path[] = ncRef.to_name(location.toString().toUpperCase() );
+				NameComponent path[] = ncRef.to_name(Constants.SERVER_NAME );
 				ncRef.rebind(path, href);
 
-				//System.out.println(location.toString().toUpperCase()+" Server ready and waiting ...");
-		}
-			
 
 			System.out.println("Front End Server Ready And Waiting ...");
 			for (;;){

@@ -41,34 +41,34 @@ static LogManager logManager;
 			if (id.contains("CON") && (id.substring(3,4).equals("M")||id.substring(3, 4).equals("U"))) {
 				if(id.contains("CONM"))
 				{
-				mngrClient = new ManagerClientImpl(args,Servers.CON, id);
+				mngrClient = new ManagerClientImpl(args, id);
 				logManager = new LogManager(Servers.CON.getserverName());
 				}
 				else
 				{
-					usrClient = new UserClientImpl(args,Servers.CON, id);
+					usrClient = new UserClientImpl(args, id);
 					logManager = new LogManager(Servers.CON.getserverName());
 				}
 			} else if (id.contains("MCG") && (id.substring(3,4).equals("M")||id.substring(3, 4).equals("U"))) {
 				if(id.contains("MCGM"))
 				{
-				mngrClient = new ManagerClientImpl(args,Servers.MCG, id);
+				mngrClient = new ManagerClientImpl(args, id);
 				logManager = new LogManager(Servers.MCG.getserverName());
 				}
 				else
 				{
-					usrClient = new UserClientImpl(args,Servers.MCG, id);
+					usrClient = new UserClientImpl(args,id);
 					logManager = new LogManager(Servers.MCG.getserverName());
 				}
 			} else if (id.contains("MON") && (id.substring(3,4).equals("M")||id.substring(3, 4).equals("U"))) {
 				if(id.contains("MONM"))
 				{
-				mngrClient =new ManagerClientImpl(args,Servers.MON, id);
+				mngrClient =new ManagerClientImpl(args, id);
 				logManager = new LogManager(Servers.MON.getserverName());
 				}
 				else
 				{
-					usrClient = new UserClientImpl(args,Servers.MON, id);
+					usrClient = new UserClientImpl(args, id);
 					logManager = new LogManager(Servers.MON.getserverName());	
 				}
 			} else {

@@ -18,7 +18,7 @@ public class ManagerClientImpl {
 	Util.LogClient logClient = null;
 	feInterface obj=null;
 
-	ManagerClientImpl(String[] args,Servers server, String managerId)
+	ManagerClientImpl(String[] args, String managerId)
  {
 		try
 		{
@@ -26,11 +26,11 @@ public class ManagerClientImpl {
 		ORB orb = ORB.init(args, null);
 		org.omg.CORBA.Object objRef =   orb.resolve_initial_references("NameService");
 		NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
-		if ((server == Servers.CON)|| (server == Servers.MCG) 
-				|| (server == Servers.MON)){
-			folder=server.getserverName().toString();
-			obj = feInterfaceHelper.narrow(ncRef.resolve_str(server.toString()));
-		}
+		//if ((server == Servers.CON)|| (server == Servers.MCG) 
+			//	|| (server == Servers.MON)){
+			//folder=server.getserverName().toString();
+			obj = feInterfaceHelper.narrow(ncRef.resolve_str(Constants.SERVER_NAME.toString()));
+		//}
 		boolean mgrID = new File(Constants.LOG_DIR+folder +"\\"+managerId).mkdir();
 		logClient = new LogClient(folder+"\\"+managerId+"\\",managerId);
 		}

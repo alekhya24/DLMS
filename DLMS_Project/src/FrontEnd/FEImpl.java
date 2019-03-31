@@ -19,6 +19,7 @@ import FEApp.feInterfacePOA;
 import Model.*;
 import Sequencer.Port;
 import Util.Constants;
+import Util.FailureHandling;
 import Util.LogManager;
 import Util.Servers;
 
@@ -28,21 +29,30 @@ public class FEImpl extends feInterfacePOA {
 
 	private static HashMap< String, InetSocketAddress > rmDetails = new HashMap <String, InetSocketAddress> ();
 	public LogManager logManager;
-	public static String FailureType;
-	
-	public static String getFailureType() {
+	public static FailureHandling FailureType;
+	DatagramSocket ds;
+	public static FailureHandling getFailureType() {
 		return FailureType;
 	}
 
-	public static void setFailureType(String failureType) {
+	public static void setFailureType(FailureHandling failureType) {
 		FailureType=failureType;
 	}
 
 	public String location;
-	public FEImpl(Servers libraryLocation) {
+	public FEImpl() {
 		super();
-		location=libraryLocation.toString();
-		logManager=new LogManager(libraryLocation.getserverName().toString().toUpperCase());
+		if(ds==null)
+		{
+			try {
+				ds= new DatagramSocket(Port.FE);
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+		}
+		//location=libraryLocation.toString();
+		//logManager=new LogManager(libraryLocation.getserverName().toString().toUpperCase());
 	}
 	
 	private ORB orb;
@@ -70,12 +80,12 @@ public class FEImpl extends feInterfacePOA {
 	public String addItem(String managerID, String itemId, String itemName, int quantity) {
 		String serverName=getServer(managerID);
 		String request =Port.FE+ Constants.DELIMITER+ serverName+Constants.DELIMITER+"addItem"+Constants.REQUEST_DELIMITER + managerID + Constants.REQUEST_DELIMITER + itemId+Constants.REQUEST_DELIMITER+itemName+Constants.REQUEST_DELIMITER+quantity;
-		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Add Item: " + request);
+		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Add Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
 		ArrayList<ServerResponse> responses;
 		try {
-			if(FailureType=="High Availability")
+			if(FailureType==FailureHandling.SoftwareCrash)
 			{
 				responses =	getResponseFromServerWithinTime();
 			}
@@ -94,12 +104,12 @@ public class FEImpl extends feInterfacePOA {
 	{
 		String serverName=getServer(managerID);
 		String request = Port.FE+Constants.DELIMITER+serverName+Constants.DELIMITER+"removeItem" +Constants.REQUEST_DELIMITER+ managerID + Constants.REQUEST_DELIMITER + itemID+Constants.REQUEST_DELIMITER+quantity;
-		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Remove Item: " + request);
+		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Remove Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
 		ArrayList<ServerResponse> responses;
 		try {
-			if(FailureType=="High Availability")
+			if(FailureType==FailureHandling.SoftwareCrash)
 			{
 				responses =	getResponseFromServerWithinTime();
 			}
@@ -118,12 +128,12 @@ public class FEImpl extends feInterfacePOA {
 	public String listItemAvailability(String managerID)  {
 		String serverName=getServer(managerID);
 		String request = Port.FE+Constants.DELIMITER+serverName+Constants.DELIMITER+"listItemAvailability"+Constants.REQUEST_DELIMITER + managerID ;
-		logManager.logger.log(Level.INFO, " Sending request to Sequencer to List Item Availability: " + request);
+		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to List Item Availability: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
 		ArrayList<ServerResponse> responses;
 		try {
-			if(FailureType=="High Availability")
+			if(FailureType==FailureHandling.SoftwareCrash)
 			{
 				responses =	getResponseFromServerWithinTime();
 			}
@@ -143,12 +153,12 @@ public class FEImpl extends feInterfacePOA {
 	{
 		String serverName=getServer(userID);
 		String request =Port.FE+Constants.DELIMITER+ serverName+Constants.DELIMITER+"findItem"+Constants.REQUEST_DELIMITER + userID + Constants.REQUEST_DELIMITER+ itemName;
-		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Find Item: " + request);
+		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Find Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
 		ArrayList<ServerResponse> responses;
 		try {
-			if(FailureType=="High Availability")
+			if(FailureType==FailureHandling.SoftwareCrash)
 			{
 				responses =	getResponseFromServerWithinTime();
 			}
@@ -167,12 +177,12 @@ public class FEImpl extends feInterfacePOA {
 	{
 		String serverName=getServer(userID);
 		String request =Port.FE+Constants.DELIMITER+ serverName+Constants.DELIMITER+ "returnItem"+Constants.REQUEST_DELIMITER + userID + Constants.REQUEST_DELIMITER + itemID;
-		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Return Item: " + request);
+		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Return Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
 		ArrayList<ServerResponse> responses;
 		try {
-			if(FailureType=="High Availability")
+			if(FailureType==FailureHandling.SoftwareCrash)
 			{
 				responses =	getResponseFromServerWithinTime();
 			}
@@ -190,12 +200,12 @@ public class FEImpl extends feInterfacePOA {
 	public String borrowItem(String userID, String itemID,boolean isWaitlisted)  {
 		String serverName=getServer(userID);
 		String request = Port.FE+":"+serverName+Constants.DELIMITER+ "borrowItem"+Constants.REQUEST_DELIMITER + userID + Constants.REQUEST_DELIMITER + itemID+Constants.REQUEST_DELIMITER+isWaitlisted;
-		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Borrow Item: " + request);
+		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Borrow Item: " + request);
 		 sendRequestToSequencer(request);
 		 String finalOp="";
 			ArrayList<ServerResponse> responses;
 			try {
-				if(FailureType=="High Availability")
+				if(FailureType==FailureHandling.SoftwareCrash)
 				{
 					responses =	getResponseFromServerWithinTime();
 				}
@@ -214,12 +224,12 @@ public class FEImpl extends feInterfacePOA {
 	public String exchangeItem(String userID, String oldItemId,String newItemId)  {
 		String serverName=getServer(userID);
 		String request = Port.FE+Constants.DELIMITER+serverName+Constants.DELIMITER+"exchangeItem"+Constants.REQUEST_DELIMITER + userID + Constants.REQUEST_DELIMITER + oldItemId+Constants.REQUEST_DELIMITER+newItemId;
-		logManager.logger.log(Level.INFO, " Sending request to Sequencer to Exchange Item: " + request);
+		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Exchange Item: " + request);
 		 sendRequestToSequencer(request);
 		 String finalOp="";
 			ArrayList<ServerResponse> responses;
 			try {
-				if(FailureType=="High Availability")
+				if(FailureType==FailureHandling.SoftwareCrash)
 				{
 					responses =	getResponseFromServerWithinTime();
 				}
@@ -250,9 +260,8 @@ public class FEImpl extends feInterfacePOA {
 	
 	public ArrayList<ServerResponse> getResponseFromServer() throws IOException {
 ArrayList<ServerResponse> result = new ArrayList<ServerResponse> () ;
-DatagramSocket ds = new DatagramSocket(Port.FE);
 		try {
-			//while ( true ) {
+			while ( true ) {
 				byte[] receiveBuffer = new byte[512] ;
 				DatagramPacket receivePacket = new DatagramPacket ( receiveBuffer, receiveBuffer.length );
 				ds.receive(receivePacket);
@@ -260,7 +269,7 @@ DatagramSocket ds = new DatagramSocket(Port.FE);
 				String[] res=bs.split(Constants.DELIMITER);
 				ServerResponse op = new ServerResponse(res[0],res[1]);
 				result.add(op) ;
-			//}
+			}
 		} catch (SocketTimeoutException e ) {
 			System.out.println(e.getMessage());
 		}
@@ -269,7 +278,6 @@ DatagramSocket ds = new DatagramSocket(Port.FE);
 	
 	public ArrayList<ServerResponse> getResponseFromServerWithinTime() throws IOException {
 ArrayList<ServerResponse> result = new ArrayList<ServerResponse> () ;
-DatagramSocket ds = new DatagramSocket();
 ds.setSoTimeout(1000);
 		try {
 			while ( true ) {

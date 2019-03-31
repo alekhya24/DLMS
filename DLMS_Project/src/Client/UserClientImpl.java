@@ -15,7 +15,7 @@ public class UserClientImpl {
 
 	feInterface obj=null;
 
-	UserClientImpl(String[] args,Servers server, String UserId)
+	UserClientImpl(String[] args, String UserId)
 	{
 	try
 	{
@@ -23,11 +23,11 @@ public class UserClientImpl {
 	ORB orb = ORB.init(args, null);
 	org.omg.CORBA.Object objRef =   orb.resolve_initial_references("NameService");
 	NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
-	if ((server == Servers.CON)|| (server == Servers.MCG) 
-			|| (server == Servers.MON)){
-		folder=server.getserverName().toString();
-		obj = feInterfaceHelper.narrow(ncRef.resolve_str(server.toString()));
-	}
+	//if ((server == Servers.CON)|| (server == Servers.MCG) 
+		//	|| (server == Servers.MON)){
+		//folder=server.getserverName().toString();
+		obj = feInterfaceHelper.narrow(ncRef.resolve_str(Constants.SERVER_NAME.toString()));
+	//}
 	boolean userID = new File(Constants.LOG_DIR+folder +"\\"+UserId).mkdir();
 	logClient = new LogClient(folder+"\\"+UserId+"\\",UserId);
 	}
