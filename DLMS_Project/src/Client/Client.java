@@ -11,7 +11,6 @@ import Util.LogManager;
 import Util.Servers;
 
 public class Client {
-static LogManager logManager;
 	
 	public static void main(String[] args) throws IOException, NotBoundException {
 		while (true) {
@@ -42,34 +41,28 @@ static LogManager logManager;
 				if(id.contains("CONM"))
 				{
 				mngrClient = new ManagerClientImpl(args, id);
-				logManager = new LogManager(Servers.CON.getserverName());
 				}
 				else
 				{
 					usrClient = new UserClientImpl(args, id);
-					logManager = new LogManager(Servers.CON.getserverName());
 				}
 			} else if (id.contains("MCG") && (id.substring(3,4).equals("M")||id.substring(3, 4).equals("U"))) {
 				if(id.contains("MCGM"))
 				{
 				mngrClient = new ManagerClientImpl(args, id);
-				logManager = new LogManager(Servers.MCG.getserverName());
 				}
 				else
 				{
 					usrClient = new UserClientImpl(args,id);
-					logManager = new LogManager(Servers.MCG.getserverName());
 				}
 			} else if (id.contains("MON") && (id.substring(3,4).equals("M")||id.substring(3, 4).equals("U"))) {
 				if(id.contains("MONM"))
 				{
 				mngrClient =new ManagerClientImpl(args, id);
-				logManager = new LogManager(Servers.MON.getserverName());
 				}
 				else
 				{
 					usrClient = new UserClientImpl(args, id);
-					logManager = new LogManager(Servers.MON.getserverName());	
 				}
 			} else {
 				System.out.println("Wrong ID.Please enter again");

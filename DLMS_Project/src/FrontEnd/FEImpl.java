@@ -30,7 +30,6 @@ import Util.Servers;
 
 public class FEImpl extends feInterfacePOA {
 
-	//private static HashMap< String, InetSocketAddress > rmDetails = new HashMap <String, InetSocketAddress> ();
 	public LogManager logManager;
 	public static FailureHandling FailureType;
 	DatagramSocket ds;
@@ -38,7 +37,6 @@ public class FEImpl extends feInterfacePOA {
 		return FailureType;
 	}
 
-	private int[] replicas= {1,2,3};
 	public static void setFailureType(FailureHandling failureType) {
 		FailureType=failureType;
 	}
@@ -46,15 +44,12 @@ public class FEImpl extends feInterfacePOA {
 	public String location;
 	public FEImpl() {
 		super();
-		if(ds==null)
-		{
-			try {
-				ds= new DatagramSocket(Port.FE);
-			} catch (SocketException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-		}
+				try {
+					ds= new DatagramSocket(Port.FE);
+				} catch (SocketException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
 		//location=libraryLocation.toString();
 		//logManager=new LogManager(libraryLocation.getserverName().toString().toUpperCase());
 	}
@@ -64,10 +59,6 @@ public class FEImpl extends feInterfacePOA {
 	public void setORB(ORB orb_val) {
 		orb = orb_val; 
 	}
-	
-//	public static void addReplicaManager ( String replicaManagerName, InetAddress ipAddress, int portNo ) {
-//		rmDetails.put( replicaManagerName, new InetSocketAddress( ipAddress, portNo )) ;
-//	}
 	
 	private String getServer(String id)
 	{
@@ -104,10 +95,10 @@ public class FEImpl extends feInterfacePOA {
 		{
 			notifyRMCrash(responses,managerID);
 		}
-		else
-		{//}
+		//else
+		//{//}
 		finalOp=getMajority(responses);
-		}
+		//}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -343,7 +334,7 @@ ds.setSoTimeout(1000);
 			System.out.println ( "Response: "+ serverResponse.getResult() ) ;
 		}
 
-		if ( responses.size() != 3  && responses.size() != 0 ) {
+		if ( responses.size() != 2  && responses.size() != 0 ) {
 		
 			return responses.get(0).getResult() ;			
 		} 		
@@ -352,7 +343,7 @@ ds.setSoTimeout(1000);
 		int counter  = 0 ;					
 		for (Entry<Integer, ServerResponse> response : responses.entrySet()) {
 			ServerResponse r= response.getValue();
-			if ( counter == 0 ) {
+			if ( counter == 0 && !r.getResult().contains("failure")) {
 				majorityResult = r.getResult() ; 
 				counter ++ ;
 			}
@@ -369,14 +360,12 @@ ds.setSoTimeout(1000);
 		
 		for (Entry<Integer, ServerResponse> response : responses.entrySet()) {
 			ServerResponse r= response.getValue();
-			if ( r.getResult() != majorityResult || r.getResult().contains("Failure") ) {
+			if ( r.getResult() != majorityResult && r.getResult().contains("failure") ) {
 				notifyRMFailure(r.getReplicaName());
-				//notifyRM ( r.getReplicaName(), "" ) ;
-				return majorityResult ;
 			}
 		}
 		
-		return "" ;
+		return majorityResult ;
 	}	
 	
 	private void notifyRM (String message ) {
@@ -401,19 +390,29 @@ ds.setSoTimeout(1000);
 	
 	private void notifyRMCrash(Map<Integer,ServerResponse> responses,String id)
 	{
-		
-	        if (!responses.containsKey(1)) {
+		boolean replica1Notified = false;
+		boolean replica2Notified=false;
+		boolean replica3Notified=false;
+		int i=0;
+		while(i<2)
+		{
+	        if (!responses.containsKey(1) && !replica1Notified) {
+	        	replica1Notified=true;
 	            String msg = "1"+Constants.DELIMITER +getServer(id)+Constants.DELIMITER+ FailureHandling.SoftwareCrash;
 	            System.out.println(msg);
 	            notifyRM(msg);
-	        } else if (!responses.containsKey(2)) {
+	        } else if (!responses.containsKey(2)&& !replica2Notified) {
+	        	replica2Notified=true;
 	            String msg = "2 " +Constants.DELIMITER +getServer(id)+Constants.DELIMITER+ FailureHandling.SoftwareCrash;
 	            System.out.println(msg);
 	            notifyRM(msg);
-	        } else if (!responses.containsKey(3)) {
+	        } else if (!responses.containsKey(3)&& !replica3Notified) {
+	        	replica3Notified=true;
 	            String msg = "3 "+Constants.DELIMITER +getServer(id)+Constants.DELIMITER+ FailureHandling.SoftwareCrash;
 	            System.out.println(msg);
 	            notifyRM(msg);
 	        }
+	        i++;
+		}
 	}
 	}
