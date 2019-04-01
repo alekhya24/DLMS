@@ -33,6 +33,9 @@ public class Constants {
 	public static String DELIMITER=":";
 	public static String REQUEST_DELIMITER="_";
 	
+	public static String multicastAddr = "230.1.1.5";
+	
+	
 	public static String FE_ADDRESS="localhost";
 	// Front end hash table for storing the request information in case of message lost.
 	// First String is requestID, second String is request message for sending to leader host.like below

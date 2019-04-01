@@ -3,6 +3,7 @@ package Replica2;
 import Util.Constants;
 import Util.Servers;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -52,7 +53,10 @@ public class Replica2 {
     }
 
     public static void main(String args[]) throws IOException{
-
+		new File(Constants.LOG_DIR).mkdirs();
+		new File(Constants.LOG_DIR+Servers.CON.getserverName().toString()).mkdirs();
+		new File(Constants.LOG_DIR+Servers.MCG.getserverName().toString()).mkdir();
+		new File(Constants.LOG_DIR+Servers.MON.getserverName().toString()).mkdir();
         DLMSServerImplementation mcgillServer = new DLMSServerImplementation(Servers.MCG);
         DLMSServerImplementation concordiaServer = new DLMSServerImplementation(Servers.CON);
         DLMSServerImplementation montrealServer = new DLMSServerImplementation(Servers.MON);

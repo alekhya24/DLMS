@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -50,11 +52,11 @@ public class FEServer {
 				System.out.println( "You have entered a wrong choice. Please try again" ) ;
 				continue ;
 			} 	
-		}		
-		new File(Constants.LOG_DIR).mkdirs();
-		new File(Constants.LOG_DIR+Servers.CON.getserverName().toString()).mkdirs();
-		new File(Constants.LOG_DIR+Servers.MCG.getserverName().toString()).mkdir();
-		new File(Constants.LOG_DIR+Servers.MON.getserverName().toString()).mkdir();	
+		}
+		//new File(Constants.LOG_DIR).mkdirs();
+		//new File(Constants.LOG_DIR+Servers.CON.getserverName().toString()).mkdirs();
+		//new File(Constants.LOG_DIR+Servers.MCG.getserverName().toString()).mkdir();
+		//new File(Constants.LOG_DIR+Servers.MON.getserverName().toString()).mkdir();	
 		init_FE(args);
 	}
 	

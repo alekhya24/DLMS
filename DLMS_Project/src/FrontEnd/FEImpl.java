@@ -11,8 +11,11 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.omg.CORBA.ORB;
 import FEApp.feInterfacePOA;
@@ -27,7 +30,7 @@ import Util.Servers;
 
 public class FEImpl extends feInterfacePOA {
 
-	private static HashMap< String, InetSocketAddress > rmDetails = new HashMap <String, InetSocketAddress> ();
+	//private static HashMap< String, InetSocketAddress > rmDetails = new HashMap <String, InetSocketAddress> ();
 	public LogManager logManager;
 	public static FailureHandling FailureType;
 	DatagramSocket ds;
@@ -35,6 +38,7 @@ public class FEImpl extends feInterfacePOA {
 		return FailureType;
 	}
 
+	private int[] replicas= {1,2,3};
 	public static void setFailureType(FailureHandling failureType) {
 		FailureType=failureType;
 	}
@@ -61,6 +65,10 @@ public class FEImpl extends feInterfacePOA {
 		orb = orb_val; 
 	}
 	
+//	public static void addReplicaManager ( String replicaManagerName, InetAddress ipAddress, int portNo ) {
+//		rmDetails.put( replicaManagerName, new InetSocketAddress( ipAddress, portNo )) ;
+//	}
+	
 	private String getServer(String id)
 	{
 		if(id.contains("MON"))
@@ -83,17 +91,23 @@ public class FEImpl extends feInterfacePOA {
 		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Add Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
-		ArrayList<ServerResponse> responses;
+		Map<Integer,ServerResponse> responses;
 		try {
-			if(FailureType==FailureHandling.SoftwareCrash)
-			{
-				responses =	getResponseFromServerWithinTime();
-			}
-			else
-			{
+			//if(FailureType==FailureHandling.SoftwareCrash)
+			//{
+				//responses =	getResponseFromServerWithinTime();
+			//}
+			//else
+			//{
 		responses =	getResponseFromServer();
-			}
+		if(responses.size()<2)
+		{
+			notifyRMCrash(responses,managerID);
+		}
+		else
+		{//}
 		finalOp=getMajority(responses);
+		}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,16 +121,20 @@ public class FEImpl extends feInterfacePOA {
 		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Remove Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
-		ArrayList<ServerResponse> responses;
+		Map<Integer,ServerResponse>  responses;
 		try {
-			if(FailureType==FailureHandling.SoftwareCrash)
-			{
-				responses =	getResponseFromServerWithinTime();
-			}
-			else
-			{
+			//if(FailureType==FailureHandling.SoftwareCrash)
+			//{
+				//responses =	getResponseFromServerWithinTime();
+			//}
+			//else
+			//{
 		responses =	getResponseFromServer();
-			}
+		if(responses.size()<2)
+		{
+			notifyRMCrash(responses,managerID);
+		}
+			//}
 		finalOp=getMajority(responses);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -131,16 +149,20 @@ public class FEImpl extends feInterfacePOA {
 		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to List Item Availability: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
-		ArrayList<ServerResponse> responses;
+		Map<Integer,ServerResponse>  responses;
 		try {
-			if(FailureType==FailureHandling.SoftwareCrash)
-			{
-				responses =	getResponseFromServerWithinTime();
-			}
-			else
-			{
+			//if(FailureType==FailureHandling.SoftwareCrash)
+			//{
+				//responses =	getResponseFromServerWithinTime();
+			//}
+			//else
+			//{
 		responses =	getResponseFromServer();
-			}
+		if(responses.size()<2)
+		{
+			notifyRMCrash(responses,managerID);
+		}
+			//}
 		finalOp=getMajority(responses);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -156,16 +178,20 @@ public class FEImpl extends feInterfacePOA {
 		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Find Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
-		ArrayList<ServerResponse> responses;
+		Map<Integer,ServerResponse>  responses;
 		try {
-			if(FailureType==FailureHandling.SoftwareCrash)
-			{
-				responses =	getResponseFromServerWithinTime();
-			}
-			else
-			{
+			//if(FailureType==FailureHandling.SoftwareCrash)
+			//{
+				//responses =	getResponseFromServerWithinTime();
+			//}
+			//else
+			//{
 		responses =	getResponseFromServer();
-			}
+		if(responses.size()<2)
+		{
+			notifyRMCrash(responses,userID);
+		}
+			//}
 		finalOp=getMajority(responses);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -180,16 +206,20 @@ public class FEImpl extends feInterfacePOA {
 		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Return Item: " + request);
 		sendRequestToSequencer(request);
 		String finalOp="";
-		ArrayList<ServerResponse> responses;
+		Map<Integer,ServerResponse>  responses;
 		try {
-			if(FailureType==FailureHandling.SoftwareCrash)
-			{
-				responses =	getResponseFromServerWithinTime();
-			}
-			else
-			{
+			//if(FailureType==FailureHandling.SoftwareCrash)
+			//{
+				//responses =	getResponseFromServerWithinTime();
+			//}
+			//else
+			//{
 		responses =	getResponseFromServer();
-			}
+		if(responses.size()<2)
+		{
+			notifyRMCrash(responses,userID);
+		}
+			//}
 		finalOp=getMajority(responses);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -203,16 +233,20 @@ public class FEImpl extends feInterfacePOA {
 		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Borrow Item: " + request);
 		 sendRequestToSequencer(request);
 		 String finalOp="";
-			ArrayList<ServerResponse> responses;
+		 Map<Integer,ServerResponse>  responses;
 			try {
-				if(FailureType==FailureHandling.SoftwareCrash)
-				{
-					responses =	getResponseFromServerWithinTime();
-				}
-				else
-				{
+				//if(FailureType==FailureHandling.SoftwareCrash)
+				//{
+					//responses =	getResponseFromServerWithinTime();
+				//}
+				//else
+				//{
 			responses =	getResponseFromServer();
-				}
+			if(responses.size()<2)
+			{
+				notifyRMCrash(responses,userID);
+			}
+				//}
 			finalOp=getMajority(responses);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -227,16 +261,20 @@ public class FEImpl extends feInterfacePOA {
 		//logManager.logger.log(Level.INFO, " Sending request to Sequencer to Exchange Item: " + request);
 		 sendRequestToSequencer(request);
 		 String finalOp="";
-			ArrayList<ServerResponse> responses;
+			Map<Integer,ServerResponse> responses;
 			try {
-				if(FailureType==FailureHandling.SoftwareCrash)
-				{
-					responses =	getResponseFromServerWithinTime();
-				}
-				else
-				{
+				//if(FailureType==FailureHandling.SoftwareCrash)
+				//{
+					//responses =	getResponseFromServerWithinTime();
+				//}
+				//else
+				//{
 			responses =	getResponseFromServer();
-				}
+			if(responses.size()<2)
+			{
+				notifyRMCrash(responses,userID);
+			}
+				//}
 			finalOp=getMajority(responses);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -258,8 +296,9 @@ public class FEImpl extends feInterfacePOA {
 		}
 	}
 	
-	public ArrayList<ServerResponse> getResponseFromServer() throws IOException {
-ArrayList<ServerResponse> result = new ArrayList<ServerResponse> () ;
+	public Map<Integer,ServerResponse> getResponseFromServer() throws IOException {
+		Map<Integer,ServerResponse> result =new HashMap<Integer,ServerResponse>();
+ds.setSoTimeout(2000);
 		try {
 			while ( true ) {
 				byte[] receiveBuffer = new byte[512] ;
@@ -268,7 +307,7 @@ ArrayList<ServerResponse> result = new ArrayList<ServerResponse> () ;
 				String bs = new String ( receivePacket.getData() ) ;
 				String[] res=bs.split(Constants.DELIMITER);
 				ServerResponse op = new ServerResponse(res[0],res[1]);
-				result.add(op) ;
+				result.put(Integer.parseInt(res[0]), op);
 			}
 		} catch (SocketTimeoutException e ) {
 			System.out.println(e.getMessage());
@@ -276,22 +315,18 @@ ArrayList<ServerResponse> result = new ArrayList<ServerResponse> () ;
 		return result ;
 	}
 	
-	public ArrayList<ServerResponse> getResponseFromServerWithinTime() throws IOException {
-ArrayList<ServerResponse> result = new ArrayList<ServerResponse> () ;
+	public Map<Integer,ServerResponse> getResponseFromServerWithinTime() throws IOException {
+Map<Integer,ServerResponse> result =new HashMap<Integer,ServerResponse>();
 ds.setSoTimeout(1000);
 		try {
 			while ( true ) {
 				byte[] receiveBuffer = new byte[512] ;
 				DatagramPacket receivePacket = new DatagramPacket ( receiveBuffer, receiveBuffer.length ) ;
 				ds.receive(receivePacket);
-				ByteArrayInputStream bs = new ByteArrayInputStream ( receivePacket.getData() ) ;
-				ObjectInputStream is = new ObjectInputStream ( bs ) ;
-				try {
-					ServerResponse res = ( ServerResponse ) is.readObject() ;
-					result.add(res) ;
-				} catch ( ClassNotFoundException e ) {
-					System.out.println ( e.getMessage() ) ;
-				}
+				String bs = new String ( receivePacket.getData() ) ;
+				String[] res=bs.split(Constants.DELIMITER);
+				ServerResponse op = new ServerResponse(res[0],res[1]);
+					result.put(Integer.parseInt(res[0]), op);
 			}
 		} catch (SocketTimeoutException e ) {
 			System.out.println(e.getMessage());
@@ -299,21 +334,24 @@ ds.setSoTimeout(1000);
 		return result ;
 	}
 	
-	private String getMajority ( ArrayList<ServerResponse> response ) {
-		System.out.println ( "Response size" + response.size() ) ;
+	private String getMajority ( Map<Integer,ServerResponse> responses ) {
+		System.out.println ( "Response size" + responses.size() ) ;
 		System.out.println ( "Responses are: " ) ;
-		for ( ServerResponse b : response ) {
-			System.out.println ( "Replica: " + b.getReplicaName() ) ;
-			System.out.println ( "Response: "+ b.getResult() ) ;
+		for (Entry<Integer, ServerResponse> response : responses.entrySet()) {
+			ServerResponse serverResponse= response.getValue();
+			System.out.println ( "Replica: " + serverResponse.getReplicaName() ) ;
+			System.out.println ( "Response: "+ serverResponse.getResult() ) ;
 		}
-		if ( response.size() != rmDetails.size()  && response.size() != 0 ) {
+
+		if ( responses.size() != 3  && responses.size() != 0 ) {
 		
-			return response.get(0).getResult() ;			
+			return responses.get(0).getResult() ;			
 		} 		
 		String majorityResult="";
 								
 		int counter  = 0 ;					
-		for ( ServerResponse r: response ) {
+		for (Entry<Integer, ServerResponse> response : responses.entrySet()) {
+			ServerResponse r= response.getValue();
 			if ( counter == 0 ) {
 				majorityResult = r.getResult() ; 
 				counter ++ ;
@@ -325,13 +363,15 @@ ds.setSoTimeout(1000);
 				counter-- ;
 			}
 		}
-		if ( counter == rmDetails.size() ) {
+		if ( counter ==3 ) {
 			return majorityResult ;
 		}
 		
-		for ( ServerResponse r: response ) {
-			if ( r.getResult() != majorityResult ) {
-				notifyRM ( r.getReplicaName(), "" ) ;
+		for (Entry<Integer, ServerResponse> response : responses.entrySet()) {
+			ServerResponse r= response.getValue();
+			if ( r.getResult() != majorityResult || r.getResult().contains("Failure") ) {
+				notifyRMFailure(r.getReplicaName());
+				//notifyRM ( r.getReplicaName(), "" ) ;
 				return majorityResult ;
 			}
 		}
@@ -339,21 +379,41 @@ ds.setSoTimeout(1000);
 		return "" ;
 	}	
 	
-	private void notifyRM ( String replicaName, String libraryName ) {
+	private void notifyRM (String message ) {
 		
-		DatagramSocket socket = null ;
+		DatagramSocket socket = null;
 		try {
-			
-			socket = new DatagramSocket () ;
-			String data = "FAILURE" + ":" + replicaName + ":" + libraryName ;
-			byte[] sendBuffer = data.getBytes() ;
-			DatagramPacket sendPacket = new DatagramPacket ( sendBuffer, sendBuffer.length, 
-					rmDetails.get(replicaName).getAddress(), rmDetails.get(replicaName).getPort() ) ;
-			socket.send(sendPacket);
-		} catch ( SocketException e ) {
-			System.out.println ( "Exception: " + e.getMessage() ) ;
-		} catch ( IOException e ) {
-			System.out.println ( "Exception: " + e.getMessage() ) ;
-		} 
+			socket = new DatagramSocket();
+			InetAddress host = InetAddress.getByName(Constants.multicastAddr);
+			byte[] data=message.getBytes();
+			DatagramPacket request = new DatagramPacket(data, data.length, host, Port.MULTICAST);
+			socket.send(request);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void notifyRMFailure(String replicaNo) {
+		String msg=replicaNo+Constants.DELIMITER+FailureHandling.SoftwareFailure;
+		System.out.println(msg);
+		notifyRM(msg);
+	}
+	
+	private void notifyRMCrash(Map<Integer,ServerResponse> responses,String id)
+	{
+		
+	        if (!responses.containsKey(1)) {
+	            String msg = "1"+Constants.DELIMITER +getServer(id)+Constants.DELIMITER+ FailureHandling.SoftwareCrash;
+	            System.out.println(msg);
+	            notifyRM(msg);
+	        } else if (!responses.containsKey(2)) {
+	            String msg = "2 " +Constants.DELIMITER +getServer(id)+Constants.DELIMITER+ FailureHandling.SoftwareCrash;
+	            System.out.println(msg);
+	            notifyRM(msg);
+	        } else if (!responses.containsKey(3)) {
+	            String msg = "3 "+Constants.DELIMITER +getServer(id)+Constants.DELIMITER+ FailureHandling.SoftwareCrash;
+	            System.out.println(msg);
+	            notifyRM(msg);
+	        }
 	}
 	}
