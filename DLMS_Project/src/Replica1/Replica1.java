@@ -20,6 +20,7 @@ public class Replica1 {
         this.montrealServer = montrealServer;
     }
 
+
     public void startReplica(int replicaPort) throws IOException{
         DatagramSocket socket = new DatagramSocket(replicaPort);
         DatagramPacket packet = null;
@@ -59,7 +60,7 @@ public class Replica1 {
         serverRepository.put("MCG",mcgillServer);
         serverRepository.put("MON",concordiaServer);
         serverRepository.put("CON",montrealServer);
-
+        //load backup data
         Replica1 replica1 = new Replica1(mcgillServer,concordiaServer,montrealServer);
         Runnable replicaTask = () -> {
             try {
@@ -68,8 +69,10 @@ public class Replica1 {
                 e.printStackTrace();
             }
         };
+
         Thread replicaThread = new Thread(replicaTask);
         replicaThread.start();
+
 
     }
 

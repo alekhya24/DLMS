@@ -27,7 +27,6 @@ public class Replica2 {
         DatagramPacket packet = null;
         byte[] data = null;
         System.out.println("Replica two started");
-
         while (true){
             data = new byte[1024];
             packet = new DatagramPacket(data,data.length);
@@ -40,7 +39,6 @@ public class Replica2 {
             Thread thread = new Thread((new ExecuteFunction(socket,packet,getServerImplementation(serverImplementation),isFailureToBeHandled)));
             thread.start();
         }
-
     }
     public DLMSServerImplementation getServerImplementation(String  serverImplementation){
         if (serverImplementation.equalsIgnoreCase("MCG")){

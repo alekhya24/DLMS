@@ -25,10 +25,14 @@ public class ExecuteFunction implements Runnable {
         InetAddress address = null;
         String data = new String(packet.getData(), 0 , packet.getLength());
         String message = null;
-        String[] ms = data.split(":");
-        message = ms[1];
+        if (!data.equals("Hi")){
+            String[] ms = message.split(Constants.REQUEST_DELIMITER);
+            message = ms[1];
+        } else {
+            message = "Hi";
+        }
 
-        int port = 4400;
+        //FE port
         byte[] data2 = null;
         DatagramPacket packet2 = null;
 
@@ -61,10 +65,14 @@ public class ExecuteFunction implements Runnable {
                 case "addInWaitlist":
                     result = serverImplementation.addInWaitlist(function[1],function[2]);
                     break;
+                case "Hi":
+                    replyEcho(this.packet);
+                    break;
+                default:
             }
 
             address = packet.getAddress();
-            port = packet.getPort();
+            int port = packet.getPort();
             data2 = result.getBytes();
             packet2 = new DatagramPacket(data2,data2.length,address,port);
             socket.send(packet2);
@@ -72,6 +80,17 @@ public class ExecuteFunction implements Runnable {
             System.out.println(e);
         }
 
+    }
+    private void replyEcho(DatagramPacket packet) {
+        try {
+            DatagramSocket socket = new DatagramSocket();
+            byte[] reply = "Reply Hi".getBytes();
+            DatagramPacket packet1 = new DatagramPacket(reply, 0, reply.length, packet.getAddress(), packet.getPort());
+            socket.send(packet1);
+            socket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -398,12 +398,12 @@ ds.setSoTimeout(1000);
 		{
 	        if (!responses.containsKey(1) && !replica1Notified) {
 	        	replica1Notified=true;
-	            String msg = "1"+Constants.DELIMITER +getServer(id)+Constants.DELIMITER+ FailureHandling.SoftwareCrash;
+	            String msg = "1"+Constants.DELIMITER +Constants.DELIMITER+ FailureHandling.SoftwareCrash;
 	            System.out.println(msg);
 	            notifyRM(msg);
 	        } else if (!responses.containsKey(2)&& !replica2Notified) {
 	        	replica2Notified=true;
-	            String msg = "2 " +Constants.DELIMITER +getServer(id)+Constants.DELIMITER+ FailureHandling.SoftwareCrash;
+	            String msg = "2 " +Constants.DELIMITER +Constants.DELIMITER+ FailureHandling.SoftwareCrash;
 	            System.out.println(msg);
 	            notifyRM(msg);
 	        } else if (!responses.containsKey(3)&& !replica3Notified) {
@@ -415,4 +415,4 @@ ds.setSoTimeout(1000);
 	        i++;
 		}
 	}
-	}
+}
